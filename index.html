@@ -100,6 +100,11 @@
     #footer h3 {
       margin: 0;
     }
+
+    .run-distance {
+      font-size: 1em;
+      fill: #0da6e0;
+    }
   </style>
 </head>
 <body>
@@ -201,6 +206,13 @@
         .attr("class", "arc")
         .attr("d", path);
 
+      // svg
+      //   .append("text")
+      //   .text(distance)
+      //   .attr("x", 10)
+      //   .attr("y", 20)
+      //   .attr("class", "run-distance");
+
       // Sort them
       sortMaps();
     }
@@ -208,7 +220,7 @@
     function sortMaps() {
       var runDivs = document.getElementsByClassName("run");
 
-      if (runDivs.length == runFiles.length) {
+      if (runDivs.length === runFiles.length) {
         var runs = sortedRunsArray();
         runs.forEach(function(run, index) {
           container.appendChild(run);
