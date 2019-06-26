@@ -111,12 +111,18 @@
     }
 
     .run-distance {
+      opacity: 0;
       font-size: 1em;
       fill: #0da6e0;
+      transition: ease-in all 0.15s;
     }
 
     .run:hover > svg > path {
       stroke: #ff4c4c;
+    }
+
+    .run:hover .run-distance {
+      opacity: 1;
     }
   </style>
 </head>
@@ -272,12 +278,12 @@
         .attr("class", "arc")
         .attr("d", path);
 
-      // svg
-      //   .append("text")
-      //   .text(distance)
-      //   .attr("x", 10)
-      //   .attr("y", 20)
-      //   .attr("class", "run-distance");
+      svg
+        .append("text")
+        .text(distance)
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("class", "run-distance");
 
       // Sort them
       // sortMaps();
