@@ -145,23 +145,59 @@
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script>
     const runFiles = [
-      "1600620885.gpx.geojson",
-      "1611070683.gpx.geojson",
-      "1615522128.gpx.geojson",
-      "1649299598.gpx.geojson",
-      "1655828005.gpx.geojson",
-      "1657378380.gpx.geojson",
-      "1657830074.gpx.geojson",
-      "1659972209.gpx.geojson",
-      "1672921725.gpx.geojson",
-      "1674890336.gpx.geojson",
-      "1687633805.gpx.geojson",
-      "1690246343.gpx.geojson",
-      "1692421493.gpx.geojson",
-      "1696743889.gpx.geojson",
-      "1696798153.gpx.geojson",
-      "1734443454.gpx.geojson",
-      "1734597372.gpx.geojson"
+      "./data/1600620885.gpx.geojson",
+      "./data/1611070683.gpx.geojson",
+      "./data/1615522128.gpx.geojson",
+      "./data/1649299598.gpx.geojson",
+      "./data/1655828005.gpx.geojson",
+      "./data/1657378380.gpx.geojson",
+      "./data/1657830074.gpx.geojson",
+      "./data/1659972209.gpx.geojson",
+      "./data/1672921725.gpx.geojson",
+      "./data/1674890336.gpx.geojson",
+      "./data/1687633805.gpx.geojson",
+      "./data/1690246343.gpx.geojson",
+      "./data/1692421493.gpx.geojson",
+      "./data/1696743889.gpx.geojson",
+      "./data/1696798153.gpx.geojson",
+      "./data/1734443454.gpx.geojson",
+      "./data/1734597372.gpx.geojson",
+      "./data/1830549013.tcx.gz.geojson",
+      "./data/1946635081.tcx.gz.geojson",
+      "./data/1963124785.tcx.gz.geojson",
+      "./data/1979418957.tcx.gz.geojson",
+      "./data/1981489715.tcx.gz.geojson",
+      "./data/1986250765.tcx.gz.geojson",
+      "./data/1986250770.tcx.gz.geojson",
+      "./data/1986250774.tcx.gz.geojson",
+      "./data/1988282183.tcx.gz.geojson",
+      "./data/1991693262.tcx.gz.geojson",
+      "./data/1992438642.tcx.gz.geojson",
+      "./data/1994197332.tcx.gz.geojson",
+      "./data/1996205720.tcx.gz.geojson",
+      "./data/1998378096.tcx.gz.geojson",
+      "./data/2001413300.tcx.gz.geojson",
+      "./data/2115758449.tcx.gz.geojson",
+      "./data/2116892924.tcx.gz.geojson",
+      "./data/2120442582.tcx.gz.geojson",
+      "./data/2123474407.tcx.gz.geojson",
+      "./data/2176922298.tcx.gz.geojson",
+      "./data/2451080686.tcx.gz.geojson",
+      "./data/2580062781.tcx.gz.geojson",
+      "./data/2582747462.tcx.gz.geojson",
+      "./data/2583990085.tcx.gz.geojson",
+      "./data/2587895304.tcx.gz.geojson",
+      "./data/2593875539.tcx.gz.geojson",
+      "./data/2599295466.tcx.gz.geojson",
+      "./data/2601707370.tcx.gz.geojson",
+      "./data/2606228399.tcx.gz.geojson",
+      "./data/2607144855.tcx.gz.geojson",
+      "./data/2613350412.tcx.gz.geojson",
+      "./data/2618663531.tcx.gz.geojson",
+      "./data/2621454608.tcx.gz.geojson",
+      "./data/2626095468.tcx.gz.geojson",
+      "./data/2629376063.tcx.gz.geojson",
+      "./data/2632837541.tcx.gz.geojson"
     ];
 
     const width = 100,
@@ -176,7 +212,7 @@
     const runInfo = [];
 
     for (let i = 0; i < runFiles.length; i++) {
-      d3.json("./data/" + runFiles[i], function(error, run) {
+      d3.json(runFiles[i], function(error, run) {
         const time = run.features[0].properties.time;
         const distance = totalDistance(run.features[0].geometry.coordinates);
 
