@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import { Application } from "express";
 import http from "http";
@@ -11,6 +12,7 @@ export default class ExpressServer {
     const root = path.normalize(__dirname + "/../..");
     app.set("appPath", root + "client");
     app.use(errorHandler);
+    app.use(cors());
   }
 
   router(routes: (app: Application) => void): ExpressServer {

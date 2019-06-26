@@ -154,86 +154,33 @@
 
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
-    const runFiles = [
-      "./data/1600620885.gpx.geojson",
-      "./data/1611070683.gpx.geojson",
-      "./data/1615522128.gpx.geojson",
-      "./data/1649299598.gpx.geojson",
-      "./data/1655828005.gpx.geojson",
-      "./data/1657378380.gpx.geojson",
-      "./data/1657830074.gpx.geojson",
-      "./data/1659972209.gpx.geojson",
-      "./data/1672921725.gpx.geojson",
-      "./data/1674890336.gpx.geojson",
-      "./data/1687633805.gpx.geojson",
-      "./data/1690246343.gpx.geojson",
-      "./data/1692421493.gpx.geojson",
-      "./data/1696743889.gpx.geojson",
-      "./data/1696798153.gpx.geojson",
-      "./data/1734443454.gpx.geojson",
-      "./data/1734597372.gpx.geojson",
-      "./data/1830549013.tcx.gz.geojson",
-      "./data/1946635081.tcx.gz.geojson",
-      "./data/1963124785.tcx.gz.geojson",
-      "./data/1979418957.tcx.gz.geojson",
-      "./data/1981489715.tcx.gz.geojson",
-      "./data/1986250765.tcx.gz.geojson",
-      "./data/1986250770.tcx.gz.geojson",
-      "./data/1986250774.tcx.gz.geojson",
-      "./data/1988282183.tcx.gz.geojson",
-      "./data/1991693262.tcx.gz.geojson",
-      "./data/1992438642.tcx.gz.geojson",
-      "./data/1994197332.tcx.gz.geojson",
-      "./data/1996205720.tcx.gz.geojson",
-      "./data/1998378096.tcx.gz.geojson",
-      "./data/2001413300.tcx.gz.geojson",
-      "./data/2115758449.tcx.gz.geojson",
-      "./data/2116892924.tcx.gz.geojson",
-      "./data/2120442582.tcx.gz.geojson",
-      "./data/2123474407.tcx.gz.geojson",
-      "./data/2176922298.tcx.gz.geojson",
-      "./data/2451080686.tcx.gz.geojson",
-      "./data/2580062781.tcx.gz.geojson",
-      "./data/2582747462.tcx.gz.geojson",
-      "./data/2583990085.tcx.gz.geojson",
-      "./data/2587895304.tcx.gz.geojson",
-      "./data/2593875539.tcx.gz.geojson",
-      "./data/2599295466.tcx.gz.geojson",
-      "./data/2601707370.tcx.gz.geojson",
-      "./data/2606228399.tcx.gz.geojson",
-      "./data/2607144855.tcx.gz.geojson",
-      "./data/2613350412.tcx.gz.geojson",
-      "./data/2618663531.tcx.gz.geojson",
-      "./data/2621454608.tcx.gz.geojson",
-      "./data/2626095468.tcx.gz.geojson",
-      "./data/2629376063.tcx.gz.geojson",
-      "./data/2632837541.tcx.gz.geojson"
-    ];
-
     const width = 125,
       height = width;
 
     const numberOfRunsContainer = document.getElementById("number-of-runs");
     const totalDistanceContainer = document.getElementById("total-distance");
-    numberOfRunsContainer.innerText = runFiles.length;
     const container = document.getElementById("runs-container");
     container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
     container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
-    const runInfo = [];
-    let totalDistanceRan = 0;
 
-    for (let i = 0; i < runFiles.length; i++) {
-      d3.json(runFiles[i], function(error, run) {
+    getData().then(runFiles => {
+      const runInfo = [];
+      let totalDistanceRan = 0;
+
+      runFiles.forEach(run => {
         const time = run.features[0].properties.time;
         const distance = totalDistance(run.features[0].geometry.coordinates);
-
         totalDistanceRan += parseFloat(distance);
-        drawRun(run, distance, time); //load the json data
-
-        if (i === runFiles.length - 1) {
-          totalDistanceContainer.innerText = totalDistanceRan.toFixed(2);
-        }
+        drawRun(run, distance, time);
       });
+
+      numberOfRunsContainer.innerText = runFiles.length;
+    });
+
+    async function getData() {
+      const response = await fetch("http://localhost:3000/api");
+      const runFiles = await response.json();
+      return runFiles;
     }
 
     function drawRun(runData, distance, time) {
@@ -291,43 +238,6 @@
       //   .attr("x", width / 2)
       //   .attr("y", height / 2)
       //   .attr("class", "run-distance");
-
-      // Sort them
-      // sortMaps();
-    }
-
-    function sortMaps() {
-      const runDivs = document.getElementsByClassName("run");
-
-      if (runDivs.length === runFiles.length) {
-        const runs = sortedRunsArray();
-        runs.forEach(function(run, index) {
-          container.appendChild(run);
-        });
-      }
-    }
-
-    function sortedRunsArray(sort) {
-      var sort = typeof sort !== "undefined" ? sort : "date",
-        runDivs = document.getElementsByClassName("run"),
-        runs = [];
-
-      for (let i = 0; i < runDivs.length; ++i) {
-        runs.push(runDivs[i]);
-      }
-
-      runs.sort(function(a, b) {
-        if (sort == "distance") {
-          return (
-            parseFloat(a.dataset.runDistance) -
-            parseFloat(b.dataset.runDistance)
-          );
-        } else {
-          return a.dataset.runDate.localeCompare(b.dataset.runDate);
-        }
-      });
-
-      return runs;
     }
 
     function totalDistance(coords) {

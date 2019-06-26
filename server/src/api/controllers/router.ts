@@ -6,4 +6,5 @@ const upload = multer({ dest: "uploads/" });
 
 export default express
   .Router()
+  .get("/", controller.getPreviousPayload)
   .post("/", upload.array("routeData"), controller.convert);
