@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import express from "express";
 import { Application } from "express";
 import http from "http";
@@ -11,12 +10,6 @@ export default class ExpressServer {
   constructor() {
     const root = path.normalize(__dirname + "/../..");
     app.set("appPath", root + "client");
-    app.use(bodyParser.json());
-    app.use(
-      bodyParser.urlencoded({
-        extended: true
-      })
-    );
     app.use(errorHandler);
   }
 
