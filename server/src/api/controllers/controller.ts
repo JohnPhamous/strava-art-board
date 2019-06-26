@@ -2,40 +2,42 @@ const tj = require("@mapbox/togeojson");
 import { Response } from "express";
 import fs from "fs";
 import { DOMParser } from "xmldom";
+const parse = require("tcx");
 
 let previousPayload = {};
 export class Controller {
   convert(req: any, res: Response): void {
-    console.log("post /", req.files);
     const filteredFiles = req.files.reduce(_filterFiles, {
       gpx: [],
-      tcxgz: []
+      tcx: []
     });
 
     const convertedGpxFiles = convertGpx(filteredFiles["gpx"]);
+    const convertedTcxFiles = convertTcx(filteredFiles["tcx"]);
 
-    const responsePayload = [...convertedGpxFiles];
+    const responsePayload = [...convertedGpxFiles, ...convertedTcxFiles];
     previousPayload = responsePayload;
     res.status(200).send(responsePayload);
   }
   getPreviousPayload(_req: any, res: Response) {
-    console.log("get /");
     res.status(200).json(previousPayload);
   }
 }
 export default new Controller();
 
-function _filterFiles(acc: any, curr: any) {
-  switch (curr.mimetype) {
-    case "application/gpx+xml":
-    case "application/octet-stream":
-      acc["gpx"].push(curr);
+function _filterFiles(acc: any, file: any) {
+  const { originalname } = file;
+  const extenstion = originalname.split(".")[1];
+
+  switch (extenstion) {
+    case "gpx":
+      acc["gpx"].push(file);
       break;
-    case "application/gzip":
-      acc["tcxgz"].push(curr);
+    case "tcx":
+      acc["tcx"].push(file);
       break;
     default:
-      throw new Error(`Unexpected file type ${curr.mimetype}`);
+      throw new Error(`Unexpected file type ${file.mimetype}`);
   }
   return acc;
 }
@@ -49,6 +51,11 @@ function convertGpx(gpxFiles: any) {
   });
 }
 
-// function unzipGz() {}
-
-// function convertTcx() {}
+function convertTcx(tcxFiles: any) {
+  return tcxFiles.map((file: any) => {
+    const tcx = new DOMParser().parseFromString(
+      fs.readFileSync(`${file.path}`, "utf8")
+    );
+    return parse(tcx);
+  });
+}
