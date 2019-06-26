@@ -129,20 +129,20 @@
 <body>
   <main>
     <section>
-      <h1>Runs</h1>
+      <h1 contenteditable="true">Runs</h1>
     </section>
     <section id="runs-container"></section>
     <section id="footer">
-      <div id="year" class="stats">
+      <div id="year-container" class="stats">
         <h3>Year</h3>
-        <h2>2019</h2>
+        <h2 id="year">2019</h2>
       </div>
       <div id="name" class="stats">
-        <h3>Athlete</h3>
-        <h2>John Pham</h2>
+        <h3 contenteditable="true">Athlete</h3>
+        <h2 contenteditable="true">Alan Turing</h2>
       </div>
       <div class="stats">
-        <h3>Runs</h3>
+        <h3 contenteditable="true">Runs</h3>
         <h2 id="number-of-runs">10</h2>
       </div>
       <div id="distance" class="stats">
@@ -162,6 +162,8 @@
     const container = document.getElementById("runs-container");
     container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
     container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
+    const year = document.getElementById("year");
+    year.innerText = new Date().getFullYear();
 
     getData().then(runFiles => {
       const runInfo = [];
