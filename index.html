@@ -130,9 +130,13 @@
         <h3>Athlete</h3>
         <h2>John Pham</h2>
       </div>
+      <div class="stats">
+        <h3>Runs</h3>
+        <h2 id="number-of-runs">10</h2>
+      </div>
       <div id="distance" class="stats">
         <h3>Distance</h3>
-        <h2><span id="distanceMeasure">50</span> miles</h2>
+        <h2><span id="total-distance">50</span> miles</h2>
       </div>
     </section>
   </main>
@@ -140,7 +144,7 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script>
-    var runFiles = [
+    const runFiles = [
       "1600620885.gpx.geojson",
       "1611070683.gpx.geojson",
       "1615522128.gpx.geojson",
@@ -160,40 +164,44 @@
       "1734597372.gpx.geojson"
     ];
 
-    var width = 100,
+    const width = 100,
       height = width;
 
-    var container = document.getElementById("runs-container");
+    const numberOfRunsContainer = document.getElementById("number-of-runs");
+    const totalDistanceContainer = document.getElementById("total-distance");
+    numberOfRunsContainer.innerText = runFiles.length;
+    const container = document.getElementById("runs-container");
     container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
     container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
-    var runInfo = [];
+    const runInfo = [];
 
-    for (var i = 0; i < runFiles.length; i++) {
+    for (let i = 0; i < runFiles.length; i++) {
       d3.json("./data/" + runFiles[i], function(error, run) {
-        var time = run.features[0].properties.time;
-        var distance = totalDistance(run.features[0].geometry.coordinates);
+        const time = run.features[0].properties.time;
+        const distance = totalDistance(run.features[0].geometry.coordinates);
 
         drawRun(run, distance, time); //load the json data
       });
     }
 
     function drawRun(runData, distance, time) {
-      var runDiv = document.createElement("div");
+      const runDiv = document.createElement("div");
       runDiv.className = "run";
       runDiv.dataset.runDistance = distance;
       runDiv.dataset.runDate = time;
+      totalDistanceContainer.innerText = distance;
 
       container.appendChild(runDiv);
 
-      var projection = d3.geo
+      const projection = d3.geo
         .mercator()
         .scale(1)
         .translate([0, 0]);
 
-      var path = d3.geo.path().projection(projection);
+      const path = d3.geo.path().projection(projection);
 
       // Compute the bounds of a feature of interest, then derive scale & translate.
-      var b = path.bounds(runData),
+      const b = path.bounds(runData),
         s =
           0.95 /
           Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
@@ -205,7 +213,7 @@
       // Update the projection to use computed scale & translate.
       projection.scale(s).translate(t);
 
-      var svg = d3
+      const svg = d3
         .select(runDiv)
         .append("svg")
         .attr("class", "run-svg")
@@ -230,10 +238,10 @@
     }
 
     function sortMaps() {
-      var runDivs = document.getElementsByClassName("run");
+      const runDivs = document.getElementsByClassName("run");
 
       if (runDivs.length === runFiles.length) {
-        var runs = sortedRunsArray();
+        const runs = sortedRunsArray();
         runs.forEach(function(run, index) {
           container.appendChild(run);
         });
@@ -245,7 +253,7 @@
         runDivs = document.getElementsByClassName("run"),
         runs = [];
 
-      for (var i = 0; i < runDivs.length; ++i) {
+      for (let i = 0; i < runDivs.length; ++i) {
         runs.push(runDivs[i]);
       }
 
@@ -264,11 +272,11 @@
     }
 
     function totalDistance(coords) {
-      var totalDist = 0;
+      let totalDist = 0;
 
-      for (var i = 0; i < coords.length - 1; ++i) {
-        var p1 = [coords[i][0], coords[i][1]];
-        var p2 = [coords[i + 1][0], coords[i + 1][1]];
+      for (let i = 0; i < coords.length - 1; ++i) {
+        const p1 = [coords[i][0], coords[i][1]];
+        const p2 = [coords[i + 1][0], coords[i + 1][1]];
 
         totalDist += calcDist(p1, p2);
       }
