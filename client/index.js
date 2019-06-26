@@ -29,7 +29,7 @@ getData().then(runFiles => {
 });
 
 async function getData() {
-  const response = await fetch("http://104.248.66.87/api");
+  const response = await fetch("https://104.248.66.87/api");
   const runFiles = await response.json();
   return runFiles;
 }
