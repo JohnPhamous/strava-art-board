@@ -1,137 +1,27 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <head>
-  <style>
-    html,
-    body {
-      height: 100vh;
-      width: 100vw;
-      margin: 0;
-      font-family: "Helvetica neue";
-      background: #27343b;
-      color: #fff;
-      overflow-x: hidden;
-    }
-
-    main {
-      display: grid;
-      grid-template-rows: 100px 2fr 100px;
-      height: 100vh;
-    }
-
-    .arc {
-      fill: none;
-      stroke-width: 5px;
-      stroke-linecap: round;
-
-      stroke: #0da6e0;
-      transition: ease-in all 0.15s;
-    }
-
-    #runs-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      grid-row-gap: 50px;
-    }
-
-    div.run {
-      display: inline-block;
-      padding: 0;
-    }
-
-    section {
-      padding: 0px 40px;
-    }
-
-    text {
-      font-size: 1.8em;
-    }
-
-    h1 {
-      font-size: 5em;
-      margin: 0 0 0px;
-    }
-
-    h2 {
-      text-align: left;
-      font-size: 6em;
-      line-height: 100%;
-      margin: 0;
-    }
-
-    h3 {
-      text-align: left;
-      font-size: 2.1em;
-      line-height: 135%;
-      margin: 0 0 15px;
-      text-transform: uppercase;
-    }
-
-    .statsHolder:last-child h3 {
-      margin-bottom: 20px;
-    }
-
-    .statsHolder {
-      display: inline-block;
-      margin: 0 70px 0 0;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .statsHolder:last-child {
-      margin: 0;
-    }
-
-    svg.run-stats {
-      width: 701px;
-      display: inline-block;
-      height: 44px;
-      padding: 1px 0 0;
-    }
-
-    .run-stats text {
-      font-style: normal;
-      font-size: 2em;
-    }
-
-    p {
-      margin: 0 0 5px;
-      line-height: 135%;
-    }
-
-    #footer {
-      display: flex;
-      font-size: 0.5em;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #footer h3 {
-      margin: 0;
-    }
-
-    .run-distance {
-      opacity: 0;
-      font-size: 1em;
-      fill: #0da6e0;
-      transition: ease-in all 0.15s;
-    }
-
-    .run:hover > svg > path {
-      stroke: #ff4c4c;
-    }
-
-    .run:hover .run-distance {
-      opacity: 1;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main>
-    <section>
+    <section id="header">
       <h1 contenteditable="true">Runs</h1>
+      <div id="menu">
+        <ul>
+          <li>
+            Upload
+            <form id="file-form" enctype="multipart/form-data" action="http://localhost:3000/api" method="POST">
+              <input type="file" multiple accept=".gpx,.gz" id="file-upload" name="routeData"/>
+              <input type="submit"></input>
+            </form>
+          </li>
+        </ul>
+      </div>
     </section>
+
     <section id="runs-container"></section>
+
     <section id="footer">
       <div id="year-container" class="stats">
         <h3>Year</h3>
@@ -152,131 +42,9 @@
     </section>
   </main>
 
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+  <script src="upload.js"></script>
+  <script src="index.js"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script>
-    const width = 125,
-      height = width;
-
-    const numberOfRunsContainer = document.getElementById("number-of-runs");
-    const totalDistanceContainer = document.getElementById("total-distance");
-    const container = document.getElementById("runs-container");
-    container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
-    container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
-    const year = document.getElementById("year");
-    year.innerText = new Date().getFullYear();
-
-    getData().then(runFiles => {
-      const runInfo = [];
-      let totalDistanceRan = 0;
-
-      runFiles.forEach(run => {
-        const time = run.features[0].properties.time;
-        const distance = totalDistance(run.features[0].geometry.coordinates);
-        totalDistanceRan += parseFloat(distance);
-        drawRun(run, distance, time);
-      });
-
-      numberOfRunsContainer.innerText = runFiles.length;
-    });
-
-    async function getData() {
-      const response = await fetch("http://localhost:3000/api");
-      const runFiles = await response.json();
-      return runFiles;
-    }
-
-    function drawRun(runData, distance, time) {
-      const runDiv = document.createElement("div");
-      runDiv.className = "run";
-      runDiv.dataset.runDistance = distance;
-      runDiv.dataset.runDate = time;
-
-      container.appendChild(runDiv);
-
-      const projection = d3.geo
-        .mercator()
-        .scale(1)
-        .translate([0, 0]);
-
-      const path = d3.geo.path().projection(projection);
-
-      // Compute the bounds of a feature of interest, then derive scale & translate.
-      const b = path.bounds(runData),
-        s =
-          0.95 /
-          Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-        t = [
-          (width - s * (b[1][0] + b[0][0])) / 2,
-          (height - s * (b[1][1] + b[0][1])) / 2
-        ];
-
-      // Update the projection to use computed scale & translate.
-      projection.scale(s).translate(t);
-
-      const svg = d3
-        .select(runDiv)
-        .append("svg")
-        .attr("class", "run-svg")
-        .attr("width", width)
-        .attr("height", height);
-
-      svg
-        .append("path")
-        .datum(runData)
-        .attr("class", "arc")
-        .attr("d", path);
-
-      // svg
-      //   .append("rect")
-      //   .attr("fill", "#ffffff47")
-      //   .attr("x", width / 2 - 10)
-      //   .attr("y", height / 2 - 16)
-      //   .attr("width", 50)
-      //   .attr("height", 20);
-
-      // svg
-      //   .append("text")
-      //   .text(distance)
-      //   .attr("x", width / 2)
-      //   .attr("y", height / 2)
-      //   .attr("class", "run-distance");
-    }
-
-    function totalDistance(coords) {
-      let totalDist = 0;
-
-      for (let i = 0; i < coords.length - 1; ++i) {
-        const p1 = [coords[i][0], coords[i][1]];
-        const p2 = [coords[i + 1][0], coords[i + 1][1]];
-
-        totalDist += calcDist(p1, p2);
-      }
-      return totalDist.toFixed(2);
-    }
-
-    function calcDist(p1, p2) {
-      // Haversine formula
-      dLatRad = (Math.abs(p1[1] - p2[1]) * Math.PI) / 180;
-      dLonRad = (Math.abs(p1[0] - p2[0]) * Math.PI) / 180;
-      // Calculate origin in Radians
-      lat1Rad = (p1[1] * Math.PI) / 180;
-      lon1Rad = (p1[0] * Math.PI) / 180;
-      // Calculate new point in Radians
-      lat2Rad = (p2[1] * Math.PI) / 180;
-      lon2Rad = (p2[0] * Math.PI) / 180;
-
-      // Earth's Radius
-      eR = 6371;
-      d1 =
-        Math.sin(dLatRad / 2) * Math.sin(dLatRad / 2) +
-        Math.sin(dLonRad / 2) *
-          Math.sin(dLonRad / 2) *
-          Math.cos(lat1Rad) *
-          Math.cos(lat2Rad);
-      d2 = 2 * Math.atan2(Math.sqrt(d1), Math.sqrt(1 - d1));
-      return eR * d2;
-    }
-
-    d3.select(self.frameElement).style("height", height + "px");
-  </script>
 </body>

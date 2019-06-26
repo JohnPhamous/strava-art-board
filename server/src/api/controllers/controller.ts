@@ -6,6 +6,7 @@ import { DOMParser } from "xmldom";
 let previousPayload = {};
 export class Controller {
   convert(req: any, res: Response): void {
+    console.log("post /", req.files);
     const filteredFiles = req.files.reduce(_filterFiles, {
       gpx: [],
       tcxgz: []
@@ -27,6 +28,7 @@ export default new Controller();
 function _filterFiles(acc: any, curr: any) {
   switch (curr.mimetype) {
     case "application/gpx+xml":
+    case "application/octet-stream":
       acc["gpx"].push(curr);
       break;
     case "application/gzip":
