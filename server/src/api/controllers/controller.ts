@@ -3,7 +3,6 @@ import { Response } from "express";
 import fs from "fs";
 import { DOMParser } from "xmldom";
 const parse = require("tcx");
-const rimraf = require("rimraf");
 
 let previousPayload = {};
 export class Controller {
@@ -19,9 +18,7 @@ export class Controller {
     const responsePayload = [...convertedGpxFiles, ...convertedTcxFiles];
     previousPayload = responsePayload;
 
-    // Clean up uploads directory
-    rimraf("./uploads", () => console.log("Cleaned Uploads"));
-
+    removeUploads(filteredFiles);
     res.status(200).send(responsePayload);
   }
   getPreviousPayload(_req: any, res: Response) {
@@ -64,3 +61,18 @@ function convertTcx(tcxFiles: any) {
     return parse(tcx);
   });
 }
+
+const removeUploads = (files: any) => {
+  const keys = Object.keys(files);
+
+  keys.forEach((key: any) => {
+    const fileType = files[key];
+
+    fileType.forEach((fileObject: any) => {
+      const path = fileObject.path;
+      fs.unlink(path, err => {
+        if (err) throw err;
+      });
+    });
+  });
+};
