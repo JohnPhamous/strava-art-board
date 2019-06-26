@@ -210,13 +210,19 @@
     container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
     container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
     const runInfo = [];
+    let totalDistanceRan = 0;
 
     for (let i = 0; i < runFiles.length; i++) {
       d3.json(runFiles[i], function(error, run) {
         const time = run.features[0].properties.time;
         const distance = totalDistance(run.features[0].geometry.coordinates);
 
+        totalDistanceRan += parseFloat(distance);
         drawRun(run, distance, time); //load the json data
+
+        if (i === runFiles.length - 1) {
+          totalDistanceContainer.innerText = totalDistanceRan.toFixed(2);
+        }
       });
     }
 
@@ -225,7 +231,6 @@
       runDiv.className = "run";
       runDiv.dataset.runDistance = distance;
       runDiv.dataset.runDate = time;
-      totalDistanceContainer.innerText = distance;
 
       container.appendChild(runDiv);
 
@@ -270,7 +275,7 @@
       //   .attr("class", "run-distance");
 
       // Sort them
-      sortMaps();
+      // sortMaps();
     }
 
     function sortMaps() {
@@ -316,7 +321,6 @@
 
         totalDist += calcDist(p1, p2);
       }
-
       return totalDist.toFixed(2);
     }
 
