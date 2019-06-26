@@ -14,7 +14,9 @@
     }
 
     main {
-      padding: 50px;
+      display: grid;
+      grid-template-rows: 100px 2fr 100px;
+      height: 100vh;
     }
 
     .arc {
@@ -33,6 +35,10 @@
     div.run {
       display: inline-block;
       padding: 0;
+    }
+
+    section {
+      padding: 0px 40px;
     }
 
     text {
@@ -95,6 +101,7 @@
       display: flex;
       font-size: 0.5em;
       justify-content: space-between;
+      align-items: end;
     }
 
     #footer h3 {
@@ -109,9 +116,11 @@
 </head>
 <body>
   <main>
-    <h1>Runs</h1>
-    <div id="runs-container"></div>
-    <div id="footer">
+    <section>
+      <h1>Runs</h1>
+    </section>
+    <section id="runs-container"></section>
+    <section id="footer">
       <div id="year" class="stats">
         <h3>Year</h3>
         <h2>2019</h2>
@@ -124,7 +133,7 @@
         <h3>Distance</h3>
         <h2>500 miles</h2>
       </div>
-    </div>
+    </section>
   </main>
 
   <script src="http://d3js.org/d3.v3.min.js"></script>
