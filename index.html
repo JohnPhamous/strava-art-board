@@ -30,6 +30,7 @@
     #runs-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-row-gap: 50px;
     }
 
     div.run {
@@ -131,7 +132,7 @@
       </div>
       <div id="distance" class="stats">
         <h3>Distance</h3>
-        <h2>500 miles</h2>
+        <h2><span id="distanceMeasure">50</span> miles</h2>
       </div>
     </section>
   </main>
@@ -159,10 +160,12 @@
       "1734597372.gpx.geojson"
     ];
 
-    var width = 230,
-      height = 230;
+    var width = 100,
+      height = width;
 
     var container = document.getElementById("runs-container");
+    container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
+    container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
     var runInfo = [];
 
     for (var i = 0; i < runFiles.length; i++) {
