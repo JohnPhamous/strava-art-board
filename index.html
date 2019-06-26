@@ -25,6 +25,7 @@
       stroke-linecap: round;
 
       stroke: #0da6e0;
+      transition: ease-in all 0.15s;
     }
 
     #runs-container {
@@ -102,7 +103,7 @@
       display: flex;
       font-size: 0.5em;
       justify-content: space-between;
-      align-items: end;
+      align-items: center;
     }
 
     #footer h3 {
@@ -112,6 +113,10 @@
     .run-distance {
       font-size: 1em;
       fill: #0da6e0;
+    }
+
+    .run:hover > svg > path {
+      stroke: #ff4c4c;
     }
   </style>
 </head>
@@ -200,7 +205,7 @@
       "./data/2632837541.tcx.gz.geojson"
     ];
 
-    const width = 100,
+    const width = 125,
       height = width;
 
     const numberOfRunsContainer = document.getElementById("number-of-runs");
