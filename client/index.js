@@ -15,10 +15,12 @@ getData().then(runFiles => {
 
   if (runFiles.length) {
     runFiles.forEach(run => {
-      const time = run.features[0].properties.time;
-      const distance = totalDistance(run.features[0].geometry.coordinates);
-      totalDistanceRan += parseFloat(distance);
-      drawRun(run, distance, time);
+      if (run.features) {
+        const time = run.features[0].properties.time;
+        const distance = totalDistance(run.features[0].geometry.coordinates);
+        totalDistanceRan += parseFloat(distance);
+        drawRun(run, distance, time);
+      }
     });
 
     numberOfRunsContainer.innerText = runFiles.length;
