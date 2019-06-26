@@ -13,15 +13,17 @@ year.innerText = new Date().getFullYear();
 getData().then(runFiles => {
   let totalDistanceRan = 0;
 
-  runFiles.forEach(run => {
-    const time = run.features[0].properties.time;
-    const distance = totalDistance(run.features[0].geometry.coordinates);
-    totalDistanceRan += parseFloat(distance);
-    drawRun(run, distance, time);
-  });
+  if (runFiles.length) {
+    runFiles.forEach(run => {
+      const time = run.features[0].properties.time;
+      const distance = totalDistance(run.features[0].geometry.coordinates);
+      totalDistanceRan += parseFloat(distance);
+      drawRun(run, distance, time);
+    });
 
-  numberOfRunsContainer.innerText = runFiles.length;
-  totalDistanceContainer.innerText = totalDistanceRan.toFixed(2);
+    numberOfRunsContainer.innerText = runFiles.length;
+    totalDistanceContainer.innerText = totalDistanceRan.toFixed(2);
+  }
 });
 
 async function getData() {
