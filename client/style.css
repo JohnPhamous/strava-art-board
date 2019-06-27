@@ -29,7 +29,7 @@ main {
 
 .arc {
   fill: none;
-  stroke-width: 5px;
+  stroke-width: 3px;
   stroke-linecap: round;
 
   stroke: #0da6e0;

@@ -1,5 +1,5 @@
 // @ts-nocheck
-const width = 125,
+const width = 75,
   height = width;
 
 const numberOfRunsContainer = document.getElementById("number-of-runs");
@@ -9,9 +9,12 @@ container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))
 container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
 const year = document.getElementById("year");
 year.innerText = new Date().getFullYear();
+const API = "http://localhost:3000/api";
+document.fileForm.action = API;
 
-getData().then(runFiles => {
+getData().then(data => {
   let totalDistanceRan = 0;
+  const runFiles = data["data"];
 
   if (runFiles.length) {
     runFiles.forEach(run => {
@@ -29,7 +32,7 @@ getData().then(runFiles => {
 });
 
 async function getData() {
-  const response = await fetch("https://strava-art-board-backend.onrender.com/api");
+  const response = await fetch(API);
   const runFiles = await response.json();
   return runFiles;
 }
