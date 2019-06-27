@@ -20,6 +20,7 @@ export class Controller {
     } catch (e) {
       errorMessage = e.toString();
       logger.error(e);
+      removeUploads({ unsupportedFiles: req.files });
     }
 
     const convertedGpxFiles = convertGpx(filteredFiles["gpx"]);
