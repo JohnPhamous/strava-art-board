@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "nodemon src/index.ts",
     "dev:debug": "nodemon --exec 'node -r ts-node/register --inspect-brk' src/index.ts",
     "lint": "tslint -c tslint.json -p tsconfig.json"
