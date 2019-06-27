@@ -9,19 +9,30 @@ let previousPayload = {};
 export class Controller {
   convert(req: any, res: Response): void {
     logger.info(`Payload Size: ${req.files.length}`);
-    const filteredFiles = req.files.reduce(_filterFiles, {
+    let filteredFiles = {
       gpx: [],
       tcx: []
-    });
+    };
+    let errorMessage = "";
+
+    try {
+      filteredFiles = req.files.reduce(_filterFiles, filteredFiles);
+    } catch (e) {
+      errorMessage = e.toString();
+      logger.error(e);
+    }
 
     const convertedGpxFiles = convertGpx(filteredFiles["gpx"]);
     logger.info(`Number of GPX Files: ${convertedGpxFiles.length}`);
     const convertedTcxFiles = convertTcx(filteredFiles["tcx"]);
     logger.info(`Number of TCX Files: ${convertedTcxFiles.length}`);
 
-    const responsePayload = [...convertedGpxFiles, ...convertedTcxFiles];
+    const responsePayload = {
+      data: [...convertedGpxFiles, ...convertedTcxFiles],
+      errorMessage
+    };
     previousPayload = responsePayload;
-    logger.info(`Returned Activities: ${responsePayload.length}`);
+    logger.info(`Returned Activities: ${responsePayload.data.length}`);
 
     removeUploads(filteredFiles);
     res.status(200).send(responsePayload);
@@ -34,7 +45,8 @@ export default new Controller();
 
 function _filterFiles(acc: any, file: any) {
   const { originalname } = file;
-  const extenstion = originalname.split(".")[1];
+  const filenameTokens = originalname.split(".");
+  const extenstion = filenameTokens[filenameTokens.length - 1];
 
   switch (extenstion) {
     case "gpx":
@@ -44,8 +56,7 @@ function _filterFiles(acc: any, file: any) {
       acc["tcx"].push(file);
       break;
     default:
-      logger.error(`Unexpected file type ${file.mimetype}`);
-      throw new Error(`Unexpected file type ${file.mimetype}`);
+      throw new Error(`Unsupported file type .${file.mimetype.split("/")[1]}`);
   }
   return acc;
 }
