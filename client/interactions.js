@@ -23,3 +23,10 @@ function colorChange(type, value) {
 function changeStroke(value) {
   root.style.setProperty(`--strokeWidth`, `${value}px`);
 }
+
+function changeDrawingSize(value) {
+  console.log(value, width);
+  width = parseInt(value, 10);
+  clear();
+  main();
+}
