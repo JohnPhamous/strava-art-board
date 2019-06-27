@@ -2,21 +2,26 @@ const tj = require("@mapbox/togeojson");
 import { Response } from "express";
 import fs from "fs";
 import { DOMParser } from "xmldom";
+import logger from "../../common/logger";
 const parse = require("tcx");
 
 let previousPayload = {};
 export class Controller {
   convert(req: any, res: Response): void {
+    logger.info(`Payload Size: ${req.files.length}`);
     const filteredFiles = req.files.reduce(_filterFiles, {
       gpx: [],
       tcx: []
     });
 
     const convertedGpxFiles = convertGpx(filteredFiles["gpx"]);
+    logger.info(`Number of GPX Files: ${convertedGpxFiles.length}`);
     const convertedTcxFiles = convertTcx(filteredFiles["tcx"]);
+    logger.info(`Number of TCX Files: ${convertedTcxFiles.length}`);
 
     const responsePayload = [...convertedGpxFiles, ...convertedTcxFiles];
     previousPayload = responsePayload;
+    logger.info(`Returned Activities: ${responsePayload.length}`);
 
     removeUploads(filteredFiles);
     res.status(200).send(responsePayload);
@@ -39,6 +44,7 @@ function _filterFiles(acc: any, file: any) {
       acc["tcx"].push(file);
       break;
     default:
+      logger.error(`Unexpected file type ${file.mimetype}`);
       throw new Error(`Unexpected file type ${file.mimetype}`);
   }
   return acc;

@@ -2,8 +2,10 @@ import cors from "cors";
 import express from "express";
 import { Application } from "express";
 import http from "http";
+import morgan from "morgan";
 import path from "path";
 import errorHandler from "../api/middlewares/error.handler";
+import { WinstonStream } from "./logger";
 
 const app = express();
 
@@ -13,6 +15,7 @@ export default class ExpressServer {
     app.set("appPath", root + "client");
     app.use(errorHandler);
     app.use(cors());
+    app.use(morgan("combined", { stream: new WinstonStream() }));
   }
 
   router(routes: (app: Application) => void): ExpressServer {
