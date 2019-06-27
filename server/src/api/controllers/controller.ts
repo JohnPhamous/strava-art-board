@@ -1,15 +1,21 @@
 const tj = require("@mapbox/togeojson");
-import { Response } from "express";
+import { Request, Response } from "express";
 import fs from "fs";
 import { DOMParser } from "xmldom";
 import logger from "../../common/logger";
+import {
+  GeoJson,
+  ResponsePayload,
+  SupportedFileTypes
+} from "../../types/index.types";
 const parse = require("tcx");
 
-let previousPayload = {};
+let previousPayload: ResponsePayload = { data: [], errorMessage: "" };
+
 export class Controller {
   convert(req: any, res: Response): void {
     logger.info(`Payload Size: ${req.files.length}`);
-    let filteredFiles = {
+    let filteredFiles: SupportedFileTypes = {
       gpx: [],
       tcx: []
     };
@@ -28,7 +34,7 @@ export class Controller {
     const convertedTcxFiles = convertTcx(filteredFiles["tcx"]);
     logger.info(`Number of TCX Files: ${convertedTcxFiles.length}`);
 
-    const responsePayload = {
+    const responsePayload: ResponsePayload = {
       data: [...convertedGpxFiles, ...convertedTcxFiles],
       errorMessage
     };
@@ -38,13 +44,13 @@ export class Controller {
     removeUploads(filteredFiles);
     res.status(200).send(responsePayload);
   }
-  getPreviousPayload(_req: any, res: Response) {
+  getPreviousPayload(_req: Request, res: Response) {
     res.status(200).json(previousPayload);
   }
 }
 export default new Controller();
 
-function _filterFiles(acc: any, file: any) {
+function _filterFiles(acc: SupportedFileTypes, file: any) {
   const { originalname } = file;
   const filenameTokens = originalname.split(".");
   const extenstion = filenameTokens[filenameTokens.length - 1];
@@ -62,7 +68,7 @@ function _filterFiles(acc: any, file: any) {
   return acc;
 }
 
-function convertGpx(gpxFiles: any) {
+function convertGpx(gpxFiles: any): GeoJson[] {
   return gpxFiles.map((file: any) => {
     const gpx = new DOMParser().parseFromString(
       fs.readFileSync(`${file.path}`, "utf8")
@@ -71,7 +77,7 @@ function convertGpx(gpxFiles: any) {
   });
 }
 
-function convertTcx(tcxFiles: any) {
+function convertTcx(tcxFiles: any): GeoJson[] {
   return tcxFiles.map((file: any) => {
     const tcx = new DOMParser().parseFromString(
       fs.readFileSync(`${file.path}`, "utf8")
@@ -83,7 +89,7 @@ function convertTcx(tcxFiles: any) {
 const removeUploads = (files: any) => {
   const keys = Object.keys(files);
 
-  keys.forEach((key: any) => {
+  keys.forEach((key: string) => {
     const fileType = files[key];
 
     fileType.forEach((fileObject: any) => {

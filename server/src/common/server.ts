@@ -15,7 +15,7 @@ export default class ExpressServer {
     app.set("appPath", root + "client");
     app.use(errorHandler);
     app.use(cors());
-    app.use(morgan("combined", { stream: new WinstonStream() }));
+    app.use(morgan("tiny", { stream: new WinstonStream() }));
   }
 
   router(routes: (app: Application) => void): ExpressServer {
