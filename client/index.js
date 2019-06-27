@@ -7,7 +7,7 @@ const totalDistanceContainer = document.getElementById("total-distance");
 const container = document.getElementById("runs-container");
 const year = document.getElementById("year");
 year.innerText = new Date().getFullYear();
-const API = "http://localhost:3000/api";
+const API = "https://strava-visualization.onrender.com/api";
 document.fileForm.action = API;
 let data = undefined;
 
