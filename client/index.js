@@ -20,7 +20,6 @@ function main() {
   let totalDistanceRan = 0;
   const runFiles = data["data"];
   container.style.gridTemplateColumns = `repeat(auto-fit, minmax(${width}px, 1fr))`;
-  container.style.gridTemplateRows = `repeat(auto-fit, ${width}px)`;
 
   if (runFiles.length) {
     runFiles.forEach(run => {

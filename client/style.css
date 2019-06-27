@@ -40,12 +40,8 @@ main {
 #runs-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(min-content, 0));
   grid-row-gap: 50px;
-}
-
-div.run {
-  display: inline-block;
-  padding: 0;
 }
 
 section {
@@ -117,6 +113,11 @@ p {
 
 #footer h3 {
   margin: 0;
+}
+
+.run {
+  display: flex;
+  justify-content: center;
 }
 
 .run-distance {
